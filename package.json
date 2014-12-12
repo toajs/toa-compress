@@ -1,0 +1,48 @@
+{
+  "name": "toa-compress",
+  "description": "Compress responses for toa.",
+  "authors": [
+    "Yan Qing <admin@zensh.com>"
+  ],
+  "version": "1.0.0",
+  "main": "index.js",
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:toajs/toa-compress.git"
+  },
+  "engines": {
+    "node": ">=0.10.0"
+  },
+  "homepage": "https://github.com/toajs/toa-compress",
+  "keywords": [
+    "toa",
+    "toa-module",
+    "toa-middleware",
+    "response",
+    "gzip",
+    "deflate",
+    "compress"
+  ],
+  "dependencies": {
+    "compressible": "^2.0.0"
+  },
+  "devDependencies": {
+    "gulp": ">=3.8.0",
+    "gulp-jshint": ">=1.8.4",
+    "gulp-mocha": ">=1.0.0",
+    "gulp-sequence": ">=0.3.0",
+    "mocha": ">=1.21.0",
+    "supertest": ">=0.15.0",
+    "toa": ">=0.4.1"
+  },
+  "scripts": {
+    "test": "gulp test"
+  },
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "test",
+    "examples",
+    "gulpfile.js"
+  ]
+}

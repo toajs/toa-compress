@@ -17,23 +17,25 @@ function bestCompress(encodings) {
   }
 }
 
-module.exports = function(options) {
+module.exports = function compress(options) {
   options = options || {};
   var minLength = options.minLength >= 32 ? Math.floor(options.minLength) : 256;
 
-  return function compress(ctx, Thunk) {
-    var body = ctx.body;
-    var compressEncoding = bestCompress(ctx.acceptsEncodings());
+  return function (callback) {
+    // add compress task to "pre end stage"
+    this.onPreEnd = function (done) {
+      var ctx = this;
+      var body = this.body;
+      var compressEncoding = bestCompress(this.acceptsEncodings());
 
-    return Thunk.call(ctx)(function() {
-      if (this.status !== 200 || !body || !compressEncoding) return;
-      if (this.response.get['Content-Encoding'] || !compressible(this.type)) return;
+      if (this.status !== 200 || !body || !compressEncoding) return done();
+      if (this.response.get['Content-Encoding'] || !compressible(this.type)) return done();
 
       if (typeof body.pipe === 'function') {
         this.set('Content-Encoding', compressEncoding);
         this.remove('Content-Length');
         this.body = body.pipe(compressEncoding === 'gzip' ? zlib.createGzip() : zlib.createDeflate());
-        return;
+        return done();
       }
 
       if (typeof body === 'string') {
@@ -42,17 +44,18 @@ module.exports = function(options) {
         body = new Buffer(JSON.stringify(body));
       }
 
-      if (body.length < minLength) return;
+      if (body.length < minLength) return done();
 
-      return function (done) {
-        zlib[compressEncoding](body, done);
-      };
-    })(function (error, res) {
-      if (error) throw error;
-      if (res && res.length < body.length) {
-        this.set('Content-Encoding', compressEncoding);
-        this.body = res;
-      }
-    });
+      zlib[compressEncoding](body, function (err, res) {
+        if (err) return done(err);
+        if (res && res.length < body.length) {
+          ctx.set('Content-Encoding', compressEncoding);
+          ctx.body = res;
+        }
+        done();
+      });
+    };
+
+    callback();
   };
 };

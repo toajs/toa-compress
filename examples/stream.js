@@ -5,12 +5,12 @@
 var fs = require('fs');
 var path = require('path');
 var Toa = require('toa');
-var Compress = require('../');
+var compress = require('../');
 
-var compress = Compress();
-
-Toa(function* (Thunk) {
+var app = Toa(function (Thunk) {
   this.body = fs.createReadStream(path.resolve(__dirname, '../package.json'));
   this.type = 'json';
-  yield compress(this, Thunk);
-}).listen(3000);
+});
+app.use(compress());
+
+app.listen(3000);

@@ -3,11 +3,12 @@
 //
 // **License:** MIT
 var Toa = require('toa');
-var Compress = require('../');
+var compress = require('../');
 
-var compress = Compress();
-
-Toa(function (Thunk) {
+var app = Toa(function (Thunk) {
   this.body = require('../package.json');
-  return compress(this, Thunk);
-}).listen(3000);
+});
+
+app.use(compress());
+
+app.listen(3000);

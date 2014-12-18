@@ -1,4 +1,4 @@
-toa-compress v1.1.0 [![Build Status](https://travis-ci.org/toajs/toa-compress.svg)](https://travis-ci.org/toajs/toa-compress)
+toa-compress v1.1.1 [![Build Status](https://travis-ci.org/toajs/toa-compress.svg)](https://travis-ci.org/toajs/toa-compress)
 ====
 compress responses middleware for toa.
 

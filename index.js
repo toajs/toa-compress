@@ -28,7 +28,7 @@ module.exports = function compress(options) {
       var body = this.body;
       var compressEncoding = bestCompress(this.acceptsEncodings());
 
-      if (this.status !== 200 || !body || !compressEncoding) return done();
+      if (this.status !== 200 || !body || !compressEncoding || this.etag) return done();
       if (this.response.get['Content-Encoding'] || !compressible(this.type)) return done();
 
       if (typeof body.pipe === 'function') {

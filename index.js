@@ -19,7 +19,8 @@ function bestCompress (encodings) {
 
 module.exports = function compress (options) {
   options = options || {}
-  var minLength = options.minLength >= 32 ? Math.floor(options.minLength) : 256
+  options.threshold = options.threshold || options.minLength
+  var threshold = options.threshold >= 32 ? Math.floor(options.threshold) : 1024
 
   return function (callback) {
     // add compress task to "pre end stage"
@@ -44,7 +45,7 @@ module.exports = function compress (options) {
         body = new Buffer(JSON.stringify(body))
       }
 
-      if (body.length < minLength) return done()
+      if (body.length < threshold) return done()
 
       zlib[compressEncoding](body, function (err, res) {
         if (err) return done(err)

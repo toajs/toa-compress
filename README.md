@@ -52,10 +52,10 @@ var compress = require('toa-compress')
 ```
 ### app.use(compress([options]))
 
-- `options.minLength`: `Number`, Default `256`, the minimum length that should compress.
+- `options.threshold`: `Number`, Default `1024`, the threshold length that should compress.
 
 ```js
-app.use(compress({minLength: 1024}))
+app.use(compress({threshold: 1024}))
 ```
 
 ## Licences

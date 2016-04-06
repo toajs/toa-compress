@@ -4,6 +4,7 @@ compress responses middleware for toa.
 
 [![NPM version][npm-image]][npm-url]
 [![Build Status][travis-image]][travis-url]
+[![Downloads][downloads-image]][downloads-url]
 
 ## [toa](https://github.com/toajs/toa)
 
@@ -66,3 +67,6 @@ app.use(compress({threshold: 1024}))
 
 [travis-url]: https://travis-ci.org/toajs/toa-compress
 [travis-image]: http://img.shields.io/travis/toajs/toa-compress.svg
+
+[downloads-url]: https://npmjs.org/package/toa-compress
+[downloads-image]: http://img.shields.io/npm/dm/toa-compress.svg?style=flat-square

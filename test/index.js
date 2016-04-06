@@ -3,10 +3,9 @@
 //
 // **License:** MIT
 
-/*global describe, it*/
-
 var fs = require('fs')
 var path = require('path')
+var tman = require('tman')
 var request = require('supertest')
 var Toa = require('toa')
 var compress = require('../')
@@ -17,8 +16,8 @@ function shouldNotCompress (res) {
   if (res.header['content-encoding']) throw new Error('responce compressed!')
 }
 
-describe('toa-compress', function () {
-  it('should compress json body with gzip', function () {
+tman.suite('toa-compress', function () {
+  tman.it('should compress json body with gzip', function () {
     var app = Toa(function () {
       this.body = require(path.join(fixtures, 'raw.json'))
     })
@@ -31,7 +30,7 @@ describe('toa-compress', function () {
       .expect(require(path.join(fixtures, 'raw.json')))
   })
 
-  it('should compress json body with deflate', function () {
+  tman.it('should compress json body with deflate', function () {
     var app = Toa(function () {
       this.body = require(path.join(fixtures, 'raw.json'))
     })
@@ -44,7 +43,7 @@ describe('toa-compress', function () {
       .expect(require(path.join(fixtures, 'raw.json')))
   })
 
-  it('should not compress json body', function () {
+  tman.it('should not compress json body', function () {
     var app = Toa(function () {
       this.body = require(path.join(fixtures, 'raw.json'))
     })
@@ -57,7 +56,7 @@ describe('toa-compress', function () {
       .expect(require(path.join(fixtures, 'raw.json')))
   })
 
-  it('should compress stream json body with gzip', function () {
+  tman.it('should compress stream json body with gzip', function () {
     var app = Toa(function () {
       this.body = fs.createReadStream(path.join(fixtures, 'raw.json'))
       this.type = 'json'
@@ -71,7 +70,7 @@ describe('toa-compress', function () {
       .expect(require(path.join(fixtures, 'raw.json')))
   })
 
-  it('should compress stream json body with deflate', function () {
+  tman.it('should compress stream json body with deflate', function () {
     var app = Toa(function () {
       this.body = fs.createReadStream(path.join(fixtures, 'raw.json'))
       this.type = 'json'
@@ -85,7 +84,7 @@ describe('toa-compress', function () {
       .expect(require(path.join(fixtures, 'raw.json')))
   })
 
-  it('should not compress octet stream', function () {
+  tman.it('should not compress octet stream', function () {
     var app = Toa(function () {
       this.body = fs.createReadStream(path.join(fixtures, 'raw.json'))
     })
@@ -97,7 +96,7 @@ describe('toa-compress', function () {
       .expect(shouldNotCompress)
   })
 
-  it('should not compress body with small size', function () {
+  tman.it('should not compress body with small size', function () {
     var app = Toa(function () {
       this.body = {foo: 'boo'}
     })

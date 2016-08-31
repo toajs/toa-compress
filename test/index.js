@@ -25,8 +25,8 @@ tman.suite('toa-compress', function () {
 
     return request(app.listen())
       .get('/')
-      .set('Accept-Encoding', 'gzip, deflate')
-      .expect('Content-Encoding', 'gzip')
+      .set('accept-encoding', 'gzip, deflate')
+      .expect('content-encoding', 'gzip')
       .expect(require(path.join(fixtures, 'raw.json')))
   })
 
@@ -38,8 +38,8 @@ tman.suite('toa-compress', function () {
 
     return request(app.listen())
       .get('/')
-      .set('Accept-Encoding', 'deflate')
-      .expect('Content-Encoding', 'deflate')
+      .set('accept-encoding', 'deflate')
+      .expect('content-encoding', 'deflate')
       .expect(require(path.join(fixtures, 'raw.json')))
   })
 
@@ -51,7 +51,7 @@ tman.suite('toa-compress', function () {
 
     return request(app.listen())
       .get('/')
-      .set('Accept-Encoding', '')
+      .set('accept-encoding', '')
       .expect(shouldNotCompress)
       .expect(require(path.join(fixtures, 'raw.json')))
   })
@@ -65,8 +65,8 @@ tman.suite('toa-compress', function () {
 
     return request(app.listen())
       .get('/')
-      .set('Accept-Encoding', 'gzip, deflate')
-      .expect('Content-Encoding', 'gzip')
+      .set('accept-encoding', 'gzip, deflate')
+      .expect('content-encoding', 'gzip')
       .expect(require(path.join(fixtures, 'raw.json')))
   })
 
@@ -79,8 +79,8 @@ tman.suite('toa-compress', function () {
 
     return request(app.listen())
       .get('/')
-      .set('Accept-Encoding', 'deflate')
-      .expect('Content-Encoding', 'deflate')
+      .set('accept-encoding', 'deflate')
+      .expect('content-encoding', 'deflate')
       .expect(require(path.join(fixtures, 'raw.json')))
   })
 
@@ -92,7 +92,7 @@ tman.suite('toa-compress', function () {
 
     return request(app.listen())
       .get('/')
-      .set('Accept-Encoding', 'gzip, deflate')
+      .set('accept-encoding', 'gzip, deflate')
       .expect(shouldNotCompress)
   })
 
@@ -104,10 +104,8 @@ tman.suite('toa-compress', function () {
 
     return request(app.listen())
       .get('/')
-      .set('Accept-Encoding', 'gzip, deflate')
+      .set('accept-encoding', 'gzip, deflate')
       .expect(shouldNotCompress)
-      .expect({
-        foo: 'boo'
-      })
+      .expect({foo: 'boo'})
   })
 })

@@ -30,27 +30,24 @@ module.exports = function compress (options) {
       var compressEncoding = bestCompress(this.acceptsEncodings())
 
       if (this.status !== 200 || !body || !compressEncoding || this.etag) return done()
-      if (this.response.get['Content-Encoding'] || !compressible(this.type)) return done()
+      if (this.response.get['content-encoding'] || !compressible(this.type)) return done()
 
       if (typeof body.pipe === 'function') {
-        this.set('Content-Encoding', compressEncoding)
-        this.remove('Content-Length')
-        this.body = body.pipe(compressEncoding === 'gzip' ? zlib.createGzip() : zlib.createDeflate())
+        this.set('content-encoding', compressEncoding)
+        this.remove('content-length')
+        this.body = body.pipe(compressEncoding === 'gzip'
+          ? zlib.createGzip() : zlib.createDeflate())
         return done()
       }
 
-      if (typeof body === 'string') {
-        body = new Buffer(body)
-      } else if (!Buffer.isBuffer(body)) {
-        body = new Buffer(JSON.stringify(body))
-      }
+      if (typeof body === 'string') body = new Buffer(body)
+      else if (!Buffer.isBuffer(body)) body = new Buffer(JSON.stringify(body))
 
       if (body.length < threshold) return done()
-
       zlib[compressEncoding](body, function (err, res) {
         if (err) return done(err)
         if (res && res.length < body.length) {
-          ctx.set('Content-Encoding', compressEncoding)
+          ctx.set('content-encoding', compressEncoding)
           ctx.body = res
         }
         done()

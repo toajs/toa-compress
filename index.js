@@ -17,43 +17,44 @@ function bestCompress (encodings) {
   }
 }
 
-module.exports = function compress (options) {
+module.exports = function toaCompress (options) {
   options = options || {}
   options.threshold = options.threshold || options.minLength
   var threshold = options.threshold >= 32 ? Math.floor(options.threshold) : 1024
 
-  return function (callback) {
-    // add compress task to "pre end stage"
-    this.onPreEnd = function (done) {
-      var ctx = this
-      var body = this.body
-      var compressEncoding = bestCompress(this.acceptsEncodings())
+  return function () {
+    // add compress task to "after hooks"
+    if (this.after) this.after(compress) // toa >=v2.1
+    else this.onPreEnd = compress
+  }
 
-      if (this.status !== 200 || !body || !compressEncoding || this.etag) return done()
-      if (this.response.get['content-encoding'] || !compressible(this.type)) return done()
+  function compress (done) {
+    var ctx = this
+    var body = this.body
+    var compressEncoding = bestCompress(this.acceptsEncodings())
 
-      if (typeof body.pipe === 'function') {
-        this.set('content-encoding', compressEncoding)
-        this.remove('content-length')
-        this.body = body.pipe(compressEncoding === 'gzip'
-          ? zlib.createGzip() : zlib.createDeflate())
-        return done()
-      }
+    if (this.status !== 200 || !body || !compressEncoding || this.etag) return done()
+    if (this.response.get['content-encoding'] || !compressible(this.type)) return done()
 
-      if (typeof body === 'string') body = new Buffer(body)
-      else if (!Buffer.isBuffer(body)) body = new Buffer(JSON.stringify(body))
-
-      if (body.length < threshold) return done()
-      zlib[compressEncoding](body, function (err, res) {
-        if (err) return done(err)
-        if (res && res.length < body.length) {
-          ctx.set('content-encoding', compressEncoding)
-          ctx.body = res
-        }
-        done()
-      })
+    if (typeof body.pipe === 'function') {
+      this.set('content-encoding', compressEncoding)
+      this.remove('content-length')
+      this.body = body.pipe(compressEncoding === 'gzip'
+        ? zlib.createGzip() : zlib.createDeflate())
+      return done()
     }
 
-    callback()
+    if (typeof body === 'string') body = new Buffer(body)
+    else if (!Buffer.isBuffer(body)) body = new Buffer(JSON.stringify(body))
+
+    if (body.length < threshold) return done()
+    zlib[compressEncoding](body, function (err, res) {
+      if (err) return done(err)
+      if (res && res.length < body.length) {
+        ctx.set('content-encoding', compressEncoding)
+        ctx.body = res
+      }
+      done()
+    })
   }
 }

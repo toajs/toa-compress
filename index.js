@@ -3,24 +3,18 @@
 //
 // **License:** MIT
 
-var zlib = require('zlib')
-var compressible = require('compressible')
+const zlib = require('zlib')
+const Stream = require('stream')
+const statuses = require('statuses')
+const compressible = require('compressible')
 
-var enableEncodings = Object.create(null)
-enableEncodings.gzip = true
-enableEncodings.deflate = true
-
-function bestCompress (encodings) {
-  if (!Array.isArray(encodings)) encodings = [encodings]
-  for (var i = 0; i < encodings.length; i++) {
-    if (enableEncodings[encodings[i]]) return encodings[i]
-  }
-}
+const encodingMethods = Object.create(null)
+encodingMethods.gzip = zlib.createGzip
+encodingMethods.deflate = zlib.createDeflate
 
 module.exports = function toaCompress (options) {
   options = options || {}
-  options.threshold = options.threshold || options.minLength
-  var threshold = options.threshold >= 32 ? Math.floor(options.threshold) : 1024
+  const threshold = options.threshold >= 32 ? Math.floor(options.threshold) : 1024
 
   return function () {
     // add compress task to "after hooks"
@@ -28,33 +22,28 @@ module.exports = function toaCompress (options) {
     else this.onPreEnd = compress
   }
 
-  function compress (done) {
-    var ctx = this
-    var body = this.body
-    var compressEncoding = bestCompress(this.acceptsEncodings())
+  function compress () {
+    let body = this.body
+    this.vary('accept-encoding')
+    if (!body || this.compress === false || this.method === 'HEAD') return
+    if (statuses.empty[this.response.status] || this.response.get('content-encoding')) return
+    if (!(this.compress === true || compressible(this.type))) return
 
-    if (this.status !== 200 || !body || !compressEncoding || this.etag) return done()
-    if (this.response.get['content-encoding'] || !compressible(this.type)) return done()
+    let encoding = this.acceptsEncodings('gzip', 'deflate', 'identity')
+    if (!encoding) this.throw(406, 'supported encodings: gzip, deflate, identity')
+    if (encoding === 'identity') return
 
-    if (typeof body.pipe === 'function') {
-      this.set('content-encoding', compressEncoding)
-      this.remove('content-length')
-      this.body = body.pipe(compressEncoding === 'gzip'
-        ? zlib.createGzip() : zlib.createDeflate())
-      return done()
+    if (!(body instanceof Stream)) {
+      if (typeof body === 'string') body = new Buffer(body)
+      else if (!Buffer.isBuffer(body)) body = new Buffer(JSON.stringify(body))
+      if (body.length < threshold) return
     }
 
-    if (typeof body === 'string') body = new Buffer(body)
-    else if (!Buffer.isBuffer(body)) body = new Buffer(JSON.stringify(body))
+    this.set('content-encoding', encoding)
+    this.remove('content-length')
 
-    if (body.length < threshold) return done()
-    zlib[compressEncoding](body, function (err, res) {
-      if (err) return done(err)
-      if (res && res.length < body.length) {
-        ctx.set('content-encoding', compressEncoding)
-        ctx.body = res
-      }
-      done()
-    })
+    var stream = this.body = encodingMethods[encoding](options)
+    if (body instanceof Stream) body.pipe(stream)
+    else stream.end(body)
   }
 }

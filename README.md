@@ -11,14 +11,14 @@ compress responses middleware for toa.
 ## Demo
 
 ```js
-var Toa = require('toa')
-var compress = require('../')
+const Toa = require('toa')
+const compress = require('../')
 
-var app = Toa(function () {
-  this.body = require('../package.json')
-});
-
+const app = new Toa()
 app.use(compress())
+app.use(function () {
+  this.body = require('../package.json')
+})
 
 app.listen(3000)
 ```
@@ -26,16 +26,17 @@ app.listen(3000)
 **compress stream:**
 
 ```js
-var fs = require('fs')
-var path = require('path')
-var Toa = require('toa')
-var compress = require('../')
+const fs = require('fs')
+const path = require('path')
+const Toa = require('toa')
+const compress = require('../')
 
-var app = Toa(function () {
+const app = new Toa()
+app.use(compress())
+app.use(function () {
   this.body = fs.createReadStream(path.resolve(__dirname, '../package.json'))
   this.type = 'json'
-});
-app.use(compress())
+})
 
 app.listen(3000)
 ```
@@ -49,7 +50,7 @@ npm install toa-compress
 ## API
 
 ```js
-var compress = require('toa-compress')
+const compress = require('toa-compress')
 ```
 ### app.use(compress([options]))
 

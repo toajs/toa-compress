@@ -2,15 +2,16 @@
 // **Github:** https://github.com/toajs/toa
 //
 // **License:** MIT
-var fs = require('fs')
-var path = require('path')
-var Toa = require('toa')
-var compress = require('../')
+const fs = require('fs')
+const path = require('path')
+const Toa = require('toa')
+const compress = require('../')
 
-var app = Toa(function () {
+const app = new Toa()
+app.use(compress())
+app.use(function () {
   this.body = fs.createReadStream(path.resolve(__dirname, '../package.json'))
   this.type = 'json'
 })
-app.use(compress())
 
 app.listen(3000)

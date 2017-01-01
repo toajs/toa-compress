@@ -2,13 +2,13 @@
 // **Github:** https://github.com/toajs/toa
 //
 // **License:** MIT
-var Toa = require('toa')
-var compress = require('../')
+const Toa = require('toa')
+const compress = require('../')
 
-var app = Toa(function () {
+const app = new Toa()
+app.use(compress())
+app.use(function () {
   this.body = require('../package.json')
 })
-
-app.use(compress())
 
 app.listen(3000)

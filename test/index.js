@@ -3,14 +3,14 @@
 //
 // **License:** MIT
 
-var fs = require('fs')
-var path = require('path')
-var tman = require('tman')
-var request = require('supertest')
-var Toa = require('toa')
-var compress = require('../')
+const fs = require('fs')
+const path = require('path')
+const tman = require('tman')
+const request = require('supertest')
+const Toa = require('toa')
+const compress = require('../')
 
-var fixtures = path.join(__dirname, 'fixtures')
+const fixtures = path.join(__dirname, 'fixtures')
 
 function shouldNotCompress (res) {
   if (res.header['content-encoding']) throw new Error('responce compressed!')
@@ -18,7 +18,8 @@ function shouldNotCompress (res) {
 
 tman.suite('toa-compress', function () {
   tman.it('should compress json body with gzip', function () {
-    var app = Toa(function () {
+    let app = new Toa()
+    app.use(function () {
       this.body = require(path.join(fixtures, 'raw.json'))
     })
     app.use(compress())
@@ -31,7 +32,8 @@ tman.suite('toa-compress', function () {
   })
 
   tman.it('should compress json body with deflate', function () {
-    var app = Toa(function () {
+    let app = new Toa()
+    app.use(function () {
       this.body = require(path.join(fixtures, 'raw.json'))
     })
     app.use(compress())
@@ -44,7 +46,8 @@ tman.suite('toa-compress', function () {
   })
 
   tman.it('should not compress json body', function () {
-    var app = Toa(function () {
+    let app = new Toa()
+    app.use(function () {
       this.body = require(path.join(fixtures, 'raw.json'))
     })
     app.use(compress())
@@ -57,7 +60,8 @@ tman.suite('toa-compress', function () {
   })
 
   tman.it('should compress stream json body with gzip', function () {
-    var app = Toa(function () {
+    let app = new Toa()
+    app.use(function () {
       this.body = fs.createReadStream(path.join(fixtures, 'raw.json'))
       this.type = 'json'
     })
@@ -71,7 +75,8 @@ tman.suite('toa-compress', function () {
   })
 
   tman.it('should compress stream json body with deflate', function () {
-    var app = Toa(function () {
+    let app = new Toa()
+    app.use(function () {
       this.body = fs.createReadStream(path.join(fixtures, 'raw.json'))
       this.type = 'json'
     })
@@ -85,7 +90,8 @@ tman.suite('toa-compress', function () {
   })
 
   tman.it('should not compress octet stream', function () {
-    var app = Toa(function () {
+    let app = new Toa()
+    app.use(function () {
       this.body = fs.createReadStream(path.join(fixtures, 'raw.json'))
     })
     app.use(compress())
@@ -97,7 +103,8 @@ tman.suite('toa-compress', function () {
   })
 
   tman.it('should not compress body with small size', function () {
-    var app = Toa(function () {
+    let app = new Toa()
+    app.use(function () {
       this.body = {foo: 'boo'}
     })
     app.use(compress())

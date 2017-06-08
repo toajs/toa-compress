@@ -34,8 +34,8 @@ module.exports = function toaCompress (options) {
     if (encoding === 'identity') return
 
     if (!(body instanceof Stream)) {
-      if (typeof body === 'string') body = new Buffer(body)
-      else if (!Buffer.isBuffer(body)) body = new Buffer(JSON.stringify(body))
+      if (typeof body === 'string') body = Buffer.from(body)
+      else if (!Buffer.isBuffer(body)) body = Buffer.from(JSON.stringify(body))
       if (body.length < threshold) return
     }
 

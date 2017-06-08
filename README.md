@@ -1,5 +1,5 @@
-toa-compress
-====
+# toa-compress
+
 compress responses middleware for toa.
 
 [![NPM version][npm-image]][npm-url]
@@ -52,6 +52,7 @@ npm install toa-compress
 ```js
 const compress = require('toa-compress')
 ```
+
 ### app.use(compress([options]))
 
 - `options.threshold`: `Number`, Default `1024`, the threshold length that should compress.
@@ -61,6 +62,7 @@ app.use(compress({threshold: 1024}))
 ```
 
 ## Licences
+
 (The MIT License)
 
 [npm-url]: https://npmjs.org/package/toa-compress
